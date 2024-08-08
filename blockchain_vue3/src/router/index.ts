@@ -1,0 +1,41 @@
+import { createRouter,createWebHistory} from 'vue-router'
+
+export default createRouter({
+    history:createWebHistory(),
+    routes:[
+        {
+            path:"/home",
+            component:()=>import('@/views/Main.vue'),
+            children:[
+                {
+                    path:"chart",
+                    component:()=>import('@/views/MainPages/chart.vue'),
+                },
+                {
+                    path:"list",
+                    component:()=>import('@/views/MainPages/list.vue')
+                },
+                {
+                    path:"typein",
+                    component:()=>import('@/views/MainPages/typeIn.vue')
+                },
+                {
+                    path:"user",
+                    component:()=>import('@/views/MainPages/user.vue')
+                },
+                {
+                    path:"trade",
+                    component:()=>import('@/views/MainPages/trade.vue')
+                },
+            ]
+        },
+        {
+            path:"/login",
+            component:()=>import('@/views/Login.vue'),
+        },
+        {
+            path:"/",
+            redirect:"/home/chart"
+        }
+    ]
+})
