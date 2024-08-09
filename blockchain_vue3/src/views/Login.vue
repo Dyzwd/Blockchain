@@ -27,7 +27,7 @@
             </div>
             <div class="bt-container">
                 <div class="zc-bt" @click="register_a">注册</div>
-                <div class="dl-bt" @click="login">登录</div>
+                <div class="dl-bt" @click="login_a">登录</div>
             </div>
         </div>
         <div class="wz"></div>
@@ -38,17 +38,25 @@
 import { ref, watch, reactive, computed } from 'vue';
 import { useAllDataStore } from '@/store'
 import { useRouter } from 'vue-router'
-import { register } from '@/request/request.ts'
+import { register,login } from '@/request/request.ts'
 //密码小眼睛
 let eyeClose = ref(1)
 let wordShow = ref('password')
 const router = useRouter()
-function register_a(){
+async function register_a(){
     let formData = new FormData()
     formData.append('username',yhm.value)
     formData.append('password',mm.value)
     formData.append('userType','种植户')
-    register(formData)
+    const result = await register(formData)
+    if (result == 1)
+    {
+        confirm('注册成功，交易id为' + localStorage.getItem('txid'))
+    }
+    else
+    {
+        confirm('注册失败')
+    }
 }
 function eyeChange() {
     eyeClose.value = 1 - eyeClose.value
@@ -75,7 +83,7 @@ let mmWarm = reactive({
 })
 let mm = ref('')
 
-function login() {
+async function login_a() {
     warmAllow.value = 1
     if (yhm.value == '' || mm.value == '') {
         if (yhm.value == '') {
@@ -91,11 +99,11 @@ function login() {
             })
         }
     } else {
-        const store = useAllDataStore()
-        //获取pinia数据
-        /* console.log(login.value[0].name) */
-
-        if (yhm.value == store.login[0].name && mm.value == store.login[0].password) {
+        let formData = new FormData()
+        formData.append('username',yhm.value)
+        formData.append('password',mm.value)
+        const result = await login(formData)
+        if (result == 1) {
             router.push({ path: '/home/chart' })
             confirm("登陆成功")
         }else{
