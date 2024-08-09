@@ -26,7 +26,7 @@
                 <div class="warm" :style="mmWarm"> password is required</div>
             </div>
             <div class="bt-container">
-                <div class="zc-bt">注册</div>
+                <div class="zc-bt" @click="register_a">注册</div>
                 <div class="dl-bt" @click="login">登录</div>
             </div>
         </div>
@@ -38,11 +38,18 @@
 import { ref, watch, reactive, computed } from 'vue';
 import { useAllDataStore } from '@/store'
 import { useRouter } from 'vue-router'
+import { register } from '@/request/request.ts'
 //密码小眼睛
 let eyeClose = ref(1)
 let wordShow = ref('password')
 const router = useRouter()
-
+function register_a(){
+    let formData = new FormData()
+    formData.append('username',yhm.value)
+    formData.append('password',mm.value)
+    formData.append('userType','种植户')
+    register(formData)
+}
 function eyeChange() {
     eyeClose.value = 1 - eyeClose.value
 }
