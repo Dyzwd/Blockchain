@@ -4,7 +4,9 @@ export function register(data) {
     return axios.post('http://124.220.149.155:9090/register',data,{
         timeout:5000
     }).then(res => {localStorage.setItem('txid',res.data.txid)
+    
     return 1
+
 })
     .catch(error => {console.log('Error during POST request:',error)})
 }
@@ -26,7 +28,24 @@ export function login(data) {
         console.log('Error during login request:', error);  
     });  
 }  
-
+export function uplink(data) {
+    return axios.post('http://124.220.149.155:9090/uplink', data, {
+        headers:{
+            'Authorization': localStorage.getItem('token')
+        }
+    })
+    .then(res => {
+        if (res.data.code == 200){
+            localStorage.setItem('txid',res.data.txid)
+            localStorage.setItem('trace_code',res.data.traceability_code)
+            return 1
+        }
+        else{
+            console.log(res.data)
+            return 0
+        }
+    })
+}
 //function saveTokenToServer(token) {  
     // 假设有一个 API 用于保存 token  
  //   axios.post('http://124.220.149.155:9090/save-token', { token }, {  
