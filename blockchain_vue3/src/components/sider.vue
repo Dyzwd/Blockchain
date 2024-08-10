@@ -3,7 +3,7 @@
         <el-radio-button :value="false">expand</el-radio-button>
         <el-radio-button :value="true">collapse</el-radio-button>
     </el-radio-group> -->
-    <el-menu default-active="2" class="el-menu-vertical-demo" :collapse="isCollapse" @open="handleOpen"
+    <el-menu default-active="1" class="el-menu-vertical-demo" :collapse="isCollapse" @open="handleOpen"
         @close="handleClose">
         <p class="title" v-if="!isCollapse">杭州市农产品朔源系统</p>
         <p class="title" v-if="isCollapse">农</p>
