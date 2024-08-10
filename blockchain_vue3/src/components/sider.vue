@@ -62,25 +62,9 @@ const store = useAllDataStore()
 let isCollapse = computed(()=>{
     return store.isCollapse
 })
-const router = useRouter()
-const menuChange = (res:any)=>{
-    router.push({ path: res })
-    if(res == '/home/chart'){
-        store.bread = ""
-    }
-    if(res == '/home/list'){
-        store.bread = "农产品数据"
-    }
-    if(res == '/home/typein'){
-        store.bread = "农产品数据录入"
-    }
-    if(res == '/home/trade'){
-        store.bread = "交易市场"
-    }
-    if(res == '/home/user'){
-        store.bread = "个人中心"
-    }
-}
+    
+import useRoute from '@/hooks/useRoute'
+const {menuChange} = useRoute()
 
 
 
