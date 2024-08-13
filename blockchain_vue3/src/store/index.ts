@@ -5,6 +5,7 @@ export const useAllDataStore = defineStore('allData',{
         return {
             isCollapse: false,
             bread:"",
+            siderIndex:1,
             login:[
                 {
                     name:"admin",
