@@ -1,112 +1,84 @@
 <template>
     <div class="container">
-
-        <!-- <div>
-            <el-radio-group v-model="size" aria-label="size control">
-                <el-radio-button value="large">large</el-radio-button>
-                <el-radio-button value="default">default</el-radio-button>
-                <el-radio-button value="small">small</el-radio-button>
-            </el-radio-group>
-            <el-radio-group v-model="labelPosition" aria-label="position control">
-                <el-radio-button value="left">Left</el-radio-button>
-                <el-radio-button value="right">Right</el-radio-button>
-                <el-radio-button value="top">Top</el-radio-button>
-            </el-radio-group>
-        </div> -->
-        <br />
-        <el-form style="max-width: 600px" :model="sizeForm" label-width="auto" :label-position="labelPosition" :size="size">
-            <el-form-item label="用户">
-                <el-input v-model="sizeForm.name" readonly/>
-            </el-form-item>
+        <el-form style="max-width: 600px" :model="sizeForm" label-width="auto" :label-position="labelPosition"
+            :size="size">
             <el-form-item label="菜品">
-                <el-input v-model="sizeForm.cuisine"/>
+                <el-input v-model="sizeForm.crop" />
             </el-form-item>
-            <el-form-item label="地区">
-                <el-select v-model="sizeForm.region" placeholder="请选择地区">
-                    <el-option label="西湖区" value="西湖区" />
-                    <el-option label="拱墅区" value="拱墅区" />
-                    <el-option label="滨江区" value="滨江区" />
-                    <el-option label="临平区" value="临平区" />
-                    <el-option label="柯桥区" value="柯桥区" />
-                    <el-option label="余杭区" value="余杭区" />
-                    <el-option label="萧山区" value="萧山区" />
-                    <el-option label="钱塘区" value="钱塘区" />
-                </el-select>
+            <el-form-item label="重量">
+                <el-input v-model="sizeForm.weight" />
+            </el-form-item>
+            <el-form-item label="源产地">
+                <el-input v-model="sizeForm.source" />
             </el-form-item>
             <el-form-item label="采摘时间">
                 <el-col :span="11">
-                    <el-date-picker v-model="sizeForm.date1" type="date" aria-label="Pick a date" placeholder="请输入日期"
-                        style="width: 100%" />
-                </el-col>
-                <el-col class="text-center" :span="1" style="margin: 0 0.5rem">-</el-col>
-                <el-col :span="11">
-                    <el-time-picker v-model="sizeForm.date2" type="date" aria-label="Pick a time" placeholder="请输入具体时间"
-                        style="width: 100%" />
+                    <el-date-picker v-model="sizeForm.time" type="date" aria-label="Pick a date" placeholder="请输入日期"
+                        style="width: 100%" format="YYYY/M/D" value-format="YYYY.M.D" />
                 </el-col>
             </el-form-item>
-            <el-form-item label="物流">
-    <el-radio-group v-model="sizeForm.type">
-        <el-radio :label="'Online activities'" name="type">快递速运</el-radio>
-        <el-radio :label="'Promotion activities'" name="type">送货上门</el-radio>
-    </el-radio-group>
-</el-form-item>
-            <el-form-item label="状态">
-                <el-radio-group v-model="sizeForm.resource">
-                    <el-radio border value="Sponsor">待售</el-radio>
-                    <el-radio border value="Venue">缺货</el-radio>
-                </el-radio-group>
-            </el-form-item>
+            <el-radio-group v-model="sizeForm.isTrade" class="radio">
+                <el-radio :value="true"  size="large" border>已完成</el-radio>
+                <el-radio :value="false"  size="large" border>未完成</el-radio>
+            </el-radio-group>
             <el-form-item>
-                <el-button type="primary" @click="onSubmit">Create</el-button>
-                <el-button>Cancel</el-button>
+                <el-button type="primary" @click="add">确认</el-button>
+                <el-button>取消</el-button>
             </el-form-item>
         </el-form>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
+//附件区
+import { onMounted, ref } from 'vue'
 import type { ComponentSize, FormProps } from 'element-plus'
-import {uplink} from '@/request/request.ts'
-
+import { ElMessage } from 'element-plus'
 const size = ref<ComponentSize>('large')
 const labelPosition = ref<FormProps['labelPosition']>('top')
 
-
-const sizeForm = reactive({
-    name: localStorage.getItem('username'),
-    region: '',
-    cuisine:'',
-    date1: '',
-    date2: '',
-    delivery: false,
-    type: [],
-    resource: '',
-    desc: '',
+//工作区
+const sizeForm = ref({
+    id: "",
+    crop: "",
+    source: "",
+    time: "",
+    weight: "",
+    isTrade:null,
 })
 
-async function onSubmit() {
-    let formData = new FormData()
-    formData.append('arg1',sizeForm.cuisine)
-    formData.append('arg2',sizeForm.region)
-    formData.append('arg3',sizeForm.date1)
-    formData.append('arg4',sizeForm.data2)
-    formData.append('arg5',sizeForm.name)
-    const result = await uplink(formData)
-    if (result == 1){
-        confirm ('上链成功，txid为' + localStorage.getItem('txid') + '溯源码为' + localStorage.getItem('trace_code'))
-    }else{
-        confirm ('上链失败')
-    }
+//listTable数据
+import listTable from '@/data/lsitTable'
+
+//增加数据
+const add = () => {
+    listTable.cropData.value.push({
+        ...sizeForm.value,
+        id: (listTable.cropData.value.length + 1).toString()
+    })
+    ElMessage({
+        message: '创建记录成功',
+        type: 'success',
+    })
 }
+
+
+onMounted(() => {
+
+})
 </script>
 
 <style>
-.container{
+.container {
     padding: 20px;
 }
 
 .el-radio-group {
     margin-right: 12px;
 }
+
+.radio{
+    margin: 10px 0 20px 0;
+}
+
 </style>
