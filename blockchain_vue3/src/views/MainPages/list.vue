@@ -2,15 +2,14 @@
     <div class="container">
         <div class="top">
             <div class="left">
-                <el-button type="success">新增
+                <el-button type="primary" @click="menuChange('/home/typein')">新增
                     <Edit style="width: 1em; height: 1em; margin-left: 8px;" />
                 </el-button>
             </div>
             <div class="right">
                 <div class="search">
-                    <el-autocomplete v-model="state" :fetch-suggestions="querySearchAsync" placeholder="请输入查询数据"
-                        @select="handleSelect" />
-                    <el-button :icon="Search" type="primary" circle />
+                    <el-input v-model="input" style="width: 240px" placeholder="请输入要查询的内容" clearable />
+                    <el-button :icon="Search" type="primary" circle @click="onSearch" />
                 </div>
                 <div class="select">
                     <el-dropdown>
@@ -29,93 +28,76 @@
             </div>
         </div>
         <div class="form">
-            <el-table :data="tableData" style="width: 100%" :row-class-name="tableRowClassName">
-                <el-table-column prop="date" label="时间" width="360" />
-                <el-table-column prop="name" label="农产品" width="360" />
-                <el-table-column prop="address" label="地点" />
+            <el-table :data="cropData" style="width: 100%">
+                <el-table-column prop="time" label="日期" width="150" sortable />
+                <el-table-column prop="crop" label="菜品" width="150" />
+                <el-table-column prop="weight" label="重量(kg)" width="150" />
+                <el-table-column prop="source" label="源产地" min-width="200" />
+                <el-table-column prop="isTrade" label="交易状态" width="150">
+                    <template #default="scope">
+                        <el-tag :type="scope.row.isTrade ? 'info' : 'warning'" effect="plain" disable-transitions>
+                            {{ scope.row.isTrade ? '已完成' : '未完成' }}</el-tag>
+                    </template>
+                </el-table-column>
+                <el-table-column label="管理" min-width="120">
+                    <template #default="scope">
+                        <el-button type="success" size="small" plain @click="handleEdit(scope.row)">
+                            编辑
+                        </el-button>
+                        <el-button type="default" size="small" plain @click="handleDel(scope.row)">删除</el-button>
+                    </template>
+                </el-table-column>
             </el-table>
         </div>
         <div class="bottom">
-            <el-pagination size="default" background layout="prev, pager, next" :total="50" class="mt-4" />
+            <el-pagination size="default" background layout="prev, pager, next" :total="total" class="mt-4" @current-change="handleCurrentChange"/>
         </div>
+
     </div>
+    <!-- dialog1 -->
+    <el-dialog v-model="dialogFormVisible" title="编辑" width="500" center>
+        <el-form :model="form">
+            <el-form-item label="时间" :label-width="formLabelWidth">
+                <el-input v-model="form.time" autocomplete="off" />
+            </el-form-item>
+            <el-form-item label="菜品" :label-width="formLabelWidth">
+                <el-input v-model="form.crop" autocomplete="off" />
+            </el-form-item>
+            <el-form-item label="重量(kg)" :label-width="formLabelWidth">
+                <el-input v-model="form.weight" autocomplete="off" />
+            </el-form-item>
+            <el-form-item label="源产地" :label-width="formLabelWidth">
+                <el-input v-model="form.source" autocomplete="off" />
+            </el-form-item>
+            <el-form-item label="交易状态" :label-width="formLabelWidth">
+                <div class="my-2 ml-4">
+                    <el-radio-group v-model="form.isTrade">
+                        <el-radio :value="true">已完成</el-radio>
+                        <el-radio :value="false">未完成</el-radio>
+                    </el-radio-group>
+                </div>
+            </el-form-item>
+        </el-form>
+        <template #footer>
+            <div class="dialog-footer">
+                <el-button @click="dialogFormVisible = false">取消</el-button>
+                <el-button type="primary" @click="onSubmit">
+                    应用
+                </el-button>
+            </div>
+        </template>
+    </el-dialog>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+//附件区（一般不改）
+import { ref, onMounted, watch } from 'vue'
+import { ArrowDown } from '@element-plus/icons-vue'
 import {
-    Check,
-    Delete,
     Edit,
-    Message,
     Search,
-    Star,
 } from '@element-plus/icons-vue'
-interface User {
-    date: string
-    name: string
-    address: string
-}
-
-const tableRowClassName = ({
-    row,
-    rowIndex,
-}: {
-    row: User
-    rowIndex: number
-}) => {
-    if (rowIndex === 1) {
-        return 'warning-row'
-    } else if (rowIndex === 3) {
-        return 'success-row'
-    }
-    return ''
-}
-
-const tableData: User[] = [
-    {
-        date: '2016-05-03',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-    {
-        date: '2016-05-02',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-    {
-        date: '2016-05-04',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-    {
-        date: '2016-05-01',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-    {
-        date: '2016-05-03',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-    {
-        date: '2016-05-02',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-    {
-        date: '2016-05-04',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-    {
-        date: '2016-05-01',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-
-]
-const state = ref('')
+const formLabelWidth = '70px'
 interface LinkItem {
     value: string
     link: string
@@ -132,37 +114,69 @@ const loadAll = () => {
         { value: 'babel', link: 'https://github.com/babel/babel' },
     ]
 }
-let timeout: ReturnType<typeof setTimeout>
-const querySearchAsync = (queryString: string, cb: (arg: any) => void) => {
-    const results = queryString
-        ? links.value.filter(createFilter(queryString))
-        : links.value
+const radio = ref('true')
+//工作区
+const dialogFormVisible = ref(false)
+let index = ref(0)
+const form = ref({
+    id: "",
+    crop: "",
+    source: "",
+    time: "",
+    weight: "",
+    isTrade: null,
+})
+let cropData = ref([{}])
+//menuChange函数
+import useRoute from '@/hooks/useRoute'
+const { menuChange } = useRoute()
 
-    clearTimeout(timeout)
-    timeout = setTimeout(() => {
-        cb(results)
-    }, 3000 * Math.random())
+//listTable数据
+import listTable from '@/data/lsitTable'
+import { handleCurrentChange } from 'element-plus/es/components/tree/src/model/util.mjs';
+
+//删除数据
+const handleDel = ({ id }: any) => {
+    index.value = listTable.cropData.value.findIndex(item => item.id === id)
+    listTable.cropData.value.splice(index.value, 1)
 }
-const createFilter = (queryString: string) => {
-    return (restaurant: LinkItem) => {
-        return (
-            restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
-        )
+
+//编辑数据-打开
+const handleEdit = ({ id }: any) => {
+    dialogFormVisible.value = true
+    index.value = listTable.cropData.value.findIndex(item => item.id === id)
+    form.value = listTable.cropData.value[index.value]
+}
+//编辑数据-提交
+const onSubmit = () => {
+    dialogFormVisible.value = false
+    listTable.cropData.value[index.value] = form.value
+}
+
+//搜索
+let input = ref("")
+const onSearch = () => {
+    cropData.value = listTable.cropData.value.filter(item => item.crop.match(input.value))
+}
+watch(input, (news) => {
+    if (news === "") {
+        cropData.value = listTable.cropData.value
     }
-}
-const handleSelect = (item: Record<string, any>) => {
-    console.log(item)
-}
-onMounted(() => {
-    links.value = loadAll()
 })
 
-import { ArrowDown } from '@element-plus/icons-vue'
-
-const handleClick = () => {
-    // eslint-disable-next-line no-alert
-    alert('button click')
+//分页
+let total = ref(2)
+const handleCurrentChange = (val:any)=>{
+    cropData.value = listTable.cropData.value.filter(item => Number(item.id) > (val-1)*10 && Number(item.id) < val*10)
 }
+
+//生命周期
+onMounted(() => {
+    cropData.value = listTable.cropData.value.filter(item => Number(item.id) > 0 && Number(item.id) < 10)
+    links.value = loadAll()
+    total.value = Math.ceil(listTable.cropData.value.length / 10)*10
+    console.log(total.value);
+})
 </script>
 
 <style scoped>
@@ -195,11 +209,12 @@ const handleClick = () => {
 
     .form {
         margin-top: 20px;
+        width: 100%;
+        height: 440px;
     }
 
-    .bottom{
+    .bottom {
         display: flex;
-        margin-top: 20px;
         width: 100%;
         justify-content: center;
     }
