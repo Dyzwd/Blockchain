@@ -4,7 +4,7 @@
             <el-button class="sider-shrink" @click="collapseChange" :icon="store.isCollapse ? Expand : Fold">
             </el-button>
             <el-breadcrumb :separator-icon="ArrowRight">
-                <el-breadcrumb-item :to="{ path: '/' }"> 首页</el-breadcrumb-item>
+                <el-breadcrumb-item :to="{ path: '/' }" @click="menuChange('/home/chart')"> 首页</el-breadcrumb-item>
                 <el-breadcrumb-item v-if="bread">{{ bread }}</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
@@ -19,7 +19,7 @@
                 </div>
                 <template #dropdown>
                     <el-dropdown-menu>
-                        <el-dropdown-item>个人中心</el-dropdown-item>
+                        <el-dropdown-item @click="menuChange('/home/user')">个人中心</el-dropdown-item>
                         <el-dropdown-item>账户安全</el-dropdown-item>
                         <el-dropdown-item>关于我们</el-dropdown-item>
                         <el-dropdown-item @click="logout">登出</el-dropdown-item>
@@ -36,33 +36,24 @@ import {
     Fold,
     Expand,
 } from '@element-plus/icons-vue'
-import { ArrowDown } from '@element-plus/icons-vue'
-
-const handleClick = () => {
-    // eslint-disable-next-line no-alert
-    /*     alert('button click') */
-}
-
+const handleClick = () => {}
 import { useAllDataStore } from '@/store'
 import { computed } from 'vue';
 const store = useAllDataStore()
 function collapseChange() {
     store.isCollapse = !store.isCollapse
-    /*     console.log(store.isCollapse) */
 }
-
 const bread = computed(() => {
     return store.bread
-})
-
-const icon = computed(() => {
-    return store.isCollapse ? "Expand" : "Fold"
 })
 import { useRouter } from 'vue-router'
 const router = useRouter()
 function logout(){
     router.push({ path: '/login' })
 }
+import useRoute from '@/hooks/useRoute'
+const {menuChange} = useRoute()
+
 </script>
 
 <style scoped>
