@@ -9,8 +9,8 @@
                                 src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
                         </div>
                         <div class="user-top-right">
-                            <p class="user-name">admin</p>
-                            <p class="user-identity">超级管理员</p>
+                            <p class="user-name">{{name}}</p>
+                            <p class="user-identity">{{type}}</p>
                         </div>
                     </div>
                     <hr>
@@ -26,7 +26,13 @@
 
 <script setup lang="ts">
 import { spawn } from 'child_process';
-
+import { onMounted } from 'vue'
+import { getinfo } from '@/request/request.ts'
+let type = localStorage.getItem('usertype')
+let name = localStorage.getItem('username')
+onMounted(() => {
+    getinfo()
+})
 
 </script>
 
@@ -59,7 +65,7 @@ import { spawn } from 'child_process';
             }
 
             .user-name {
-                font-size: 35px
+                font-size: 20px
             }
         }
     }

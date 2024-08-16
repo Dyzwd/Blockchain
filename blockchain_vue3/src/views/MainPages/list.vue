@@ -29,20 +29,16 @@
         </div>
         <div class="form">
             <el-table :data="cropData" style="width: 100%">
-                <el-table-column prop="time" label="日期" width="150" sortable />
-                <el-table-column prop="crop" label="菜品" width="150" />
-                <el-table-column prop="weight" label="重量(kg)" width="150" />
-                <el-table-column prop="source" label="源产地" min-width="200" />
-                <el-table-column prop="isTrade" label="交易状态" width="150">
-                    <template #default="scope">
-                        <el-tag :type="scope.row.isTrade ? 'info' : 'warning'" effect="plain" disable-transitions>
-                            {{ scope.row.isTrade ? '已完成' : '未完成' }}</el-tag>
-                    </template>
-                </el-table-column>
+                <el-table-column prop="farmer_input.fa_plantTime" label="日期" width="150" sortable />
+                <el-table-column prop="farmer_input.fa_fruitName" label="菜品" width="150" />
+                <el-table-column prop="farmer_input.fa_pickingTime" label="重量(kg)" width="150" />
+                <el-table-column prop="farmer_input.fa_origin" label="源产地" min-width="200" />
+                <el-table-column prop="traceability_code" label="溯源码" min-width="200" />
+                
                 <el-table-column label="管理" min-width="120">
                     <template #default="scope">
                         <el-button type="success" size="small" plain @click="handleEdit(scope.row)">
-                            编辑
+                            详细信息
                         </el-button>
                         <el-button type="default" size="small" plain @click="handleDel(scope.row)">删除</el-button>
                     </template>
@@ -57,26 +53,7 @@
     <!-- dialog1 -->
     <el-dialog v-model="dialogFormVisible" title="编辑" width="500" center>
         <el-form :model="form">
-            <el-form-item label="时间" :label-width="formLabelWidth">
-                <el-input v-model="form.time" autocomplete="off" />
-            </el-form-item>
-            <el-form-item label="菜品" :label-width="formLabelWidth">
-                <el-input v-model="form.crop" autocomplete="off" />
-            </el-form-item>
-            <el-form-item label="重量(kg)" :label-width="formLabelWidth">
-                <el-input v-model="form.weight" autocomplete="off" />
-            </el-form-item>
-            <el-form-item label="源产地" :label-width="formLabelWidth">
-                <el-input v-model="form.source" autocomplete="off" />
-            </el-form-item>
-            <el-form-item label="交易状态" :label-width="formLabelWidth">
-                <div class="my-2 ml-4">
-                    <el-radio-group v-model="form.isTrade">
-                        <el-radio :value="true">已完成</el-radio>
-                        <el-radio :value="false">未完成</el-radio>
-                    </el-radio-group>
-                </div>
-            </el-form-item>
+            <el-form-item  >{{datalabel}}</el-form-item>
         </el-form>
         <template #footer>
             <div class="dialog-footer">
@@ -97,6 +74,7 @@ import {
     Edit,
     Search,
 } from '@element-plus/icons-vue'
+import { getalldata } from '@/request/request.ts'
 const formLabelWidth = '70px'
 interface LinkItem {
     value: string
@@ -118,6 +96,7 @@ const radio = ref('true')
 //工作区
 const dialogFormVisible = ref(false)
 let index = ref(0)
+let datalabel = ""
 const form = ref({
     id: "",
     crop: "",
@@ -142,10 +121,14 @@ const handleDel = ({ id }: any) => {
 }
 
 //编辑数据-打开
-const handleEdit = ({ id }: any) => {
+const handleEdit = (res) => {
+    console.log(res)
+    datalabel = JSON.stringify(res)
     dialogFormVisible.value = true
-    index.value = listTable.cropData.value.findIndex(item => item.id === id)
-    form.value = listTable.cropData.value[index.value]
+    //dialogFormVisible.value = true
+
+    //index.value = listTable.cropData.value.findIndex(item => item.id === id)
+    //form.value = listTable.cropData.value[index.value]
 }
 //编辑数据-提交
 const onSubmit = () => {
@@ -157,6 +140,7 @@ const onSubmit = () => {
 let input = ref("")
 const onSearch = () => {
     cropData.value = listTable.cropData.value.filter(item => item.crop.match(input.value))
+   
 }
 watch(input, (news) => {
     if (news === "") {
@@ -172,10 +156,15 @@ const handleCurrentChange = (val:any)=>{
 
 //生命周期
 onMounted(() => {
-    cropData.value = listTable.cropData.value.filter(item => Number(item.id) > 0 && Number(item.id) < 10)
-    links.value = loadAll()
-    total.value = Math.ceil(listTable.cropData.value.length / 10)*10
-    console.log(total.value);
+    getalldata()
+    cropData = JSON.parse(localStorage.getItem('alldata'))
+    cropData = cropData.filter(item => {
+        return item.farmer_input.fa_fruitName != 'undefined' && item.farmer_input.fa_fruitName != ''
+    })
+    console.log(cropData)
+    dialogFormVisible.value = true
+    dialogFormVisible.value = false
+    
 })
 </script>
 

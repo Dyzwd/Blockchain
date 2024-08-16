@@ -22,6 +22,16 @@
                     </div>
                 </div>
             </div>
+            <el-form-item style="width: 200px">
+          <el-select placeholder="请选择角色" v-model="user">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
             <div class="warm-container">
                 <div class="warm" :style="mmWarm"> password is required</div>
             </div>
@@ -40,14 +50,32 @@ import { useAllDataStore } from '@/store'
 import { useRouter } from 'vue-router'
 import { register,login } from '@/request/request.ts'
 //密码小眼睛
+
+let options = [{
+        value: '种植户',
+        label: '种植户'
+      }, {
+        value: '工厂',
+        label: '工厂'
+      }, {
+        value: '运输司机',
+        label: '运输司机'
+      }, {
+        value: '商店',
+        label: '商店'
+      }, {
+        value: '消费者',
+        label: '消费者'
+      }]
 let eyeClose = ref(1)
 let wordShow = ref('password')
+
 const router = useRouter()
 async function register_a(){
     let formData = new FormData()
     formData.append('username',yhm.value)
     formData.append('password',mm.value)
-    formData.append('userType','种植户')
+    formData.append('userType',user.value)
     const result = await register(formData)
     if (result == 1)
     {
@@ -82,6 +110,7 @@ let mmWarm = reactive({
     opacity: "0"
 })
 let mm = ref('')
+let user = ref('')
 
 async function login_a() {
     warmAllow.value = 1
@@ -105,6 +134,7 @@ async function login_a() {
         const result = await login(formData)
         if (result == 1) {
             router.push({ path: '/home/chart' })
+            localStorage.setItem('username',yhm.value)
             confirm("登陆成功")
         }else{
             confirm("账号密码错误")
@@ -112,6 +142,11 @@ async function login_a() {
     }
 }
 
+watch(user,(news) => {
+    console.log('Selected user:', news);
+}
+
+)
 watch(yhm, (news) => {
     if (news == '' && warmAllow.value == 1) {
         console.log('warm')
