@@ -56,9 +56,11 @@
 <script setup lang="ts">
 import * as echarts from 'echarts';
 import { reactive, ref, onMounted } from 'vue'
+import { getnumber } from '@/request/request.ts'
 let lineChart = ref()
 let pieChart = ref()
 onMounted(() => {
+    getnumber()
     let myLineChart = echarts.init(lineChart.value)
     let lineOption = {
         title: {
