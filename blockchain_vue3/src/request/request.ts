@@ -68,7 +68,27 @@ export function getdata(data) {
         return 0; // 返回 null，表示发生了错误
     });
 }
-
+export function getorder(data) {
+    return axios.post('http://124.220.149.155:9090/getOrders', data,{
+        headers: {
+            'Authorization': localStorage.getItem('token') // 使用存储的 token
+        }
+    })
+    .then(res => {
+        if (res.status == 200) {
+            console.log('Data retrieved successfully:', res.data);
+            localStorage.setItem('orders',res.data.data)
+            return 1; // 返回获取的数据
+        } else {
+            console.log('Failed to retrieve data:', res.data.message);
+            return 0; // 返回 null，表示未能成功获取数据
+        }
+    })
+    .catch(error => {
+        console.log('Error during data retrieval:', error);
+        return 0; // 返回 null，表示发生了错误
+    });
+}
 
 export function getalldata(data) {
     return axios.post('http://124.220.149.155:9090/getAllFruitInfo', data,{
@@ -103,6 +123,28 @@ export function getinfo(data) {
             console.log('Data retrieved successfully:', res.data);
             localStorage.setItem('usertype',res.data.userType)
             localStorage.setItem('username',res.data.username)
+            localStorage.setItem('userID',res.data.userID)
+	    return 1; // 返回获取的数据
+        } else {
+            console.log('Failed to retrieve data:', res.data.message);
+            return 0; // 返回 null，表示未能成功获取数据
+        }
+    })
+    .catch(error => {
+        console.log('Error during data retrieval:', error);
+        return 0; // 返回 null，表示发生了错误
+    });
+}
+export function uporder(data) {
+    return axios.post('http://124.220.149.155:9090/upOrder', data,{
+        headers: {
+            'Authorization': localStorage.getItem('token') // 使用存储的 token
+        }
+    })
+    .then(res => {
+        if (res.status == 200) {
+            console.log('Data retrieved successfully:', res.data);
+            
             return 1; // 返回获取的数据
         } else {
             console.log('Failed to retrieve data:', res.data.message);
@@ -114,7 +156,6 @@ export function getinfo(data) {
         return 0; // 返回 null，表示发生了错误
     });
 }
-
 
 //function saveTokenToServer(token) {  
     // 假设有一个 API 用于保存 token  

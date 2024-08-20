@@ -15,7 +15,7 @@
             <el-dropdown  @click="handleClick">
                 <div class="user">
                     <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
-                    <p>admin</p>
+                    <p>{{name}}</p>
                 </div>
                 <template #dropdown>
                     <el-dropdown-menu>
@@ -40,6 +40,7 @@ const handleClick = () => {}
 import { useAllDataStore } from '@/store'
 import { computed } from 'vue';
 const store = useAllDataStore()
+let name = localStorage.getItem('username')
 function collapseChange() {
     store.isCollapse = !store.isCollapse
 }

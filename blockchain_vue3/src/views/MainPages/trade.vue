@@ -20,6 +20,10 @@
                             </el-descriptions-item>
                         </el-descriptions>
                     </div>
+                    <div>
+                        <el-button @click="openDialog()">上传</el-button>
+                        <el-button @click="getData()">获取数据</el-button>
+                    </div>
                 </div>
             </el-card>
         </div>
@@ -45,27 +49,27 @@
     </div>
 
     <el-dialog v-model="dialogFormVisible" title="" width="500" center>
-        <el-form :model="form">
-            <el-form-item label="菜品" :label-width="formLabelWidth">
-                <el-input v-model="form.crop" autocomplete="off" />
+        <el-form>
+            <el-form-item label="订单总价">
+                <el-input v-model="sizeForm.price" autocomplete="off" />
             </el-form-item>
-            <el-form-item label="重量" :label-width="formLabelWidth">
-                <el-input v-model="form.weight" autocomplete="off" />
+            <el-form-item label="订单类型" >
+                <el-input  v-model="sizeForm.type" autocomplete="off" />
             </el-form-item>
-            <el-form-item label="地址" :label-width="formLabelWidth">
-                <el-input v-model="form.address" autocomplete="off" />
+            <el-form-item label="订单内容" >
+                <el-input  v-model="sizeForm.content" autocomplete="off" />
             </el-form-item>
             <!-- <el-form-item label="详细地址" :label-width="formLabelWidth">
                 <el-input v-model="form.address" autocomplete="off" />
             </el-form-item> -->
-            <el-form-item label="交易状态" :label-width="formLabelWidth">
-                <el-input v-model="form.isTrade" autocomplete="off" />
+            <el-form-item label="交易状态" >
+                <el-input  v-model="sizeForm.status" autocomplete="off" />
             </el-form-item>
         </el-form>
         <template #footer>
             <div class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取消</el-button>
-                <el-button type="primary" @click="onSubmit">
+                <el-button @click="upload" type="primary">
                     应用
                 </el-button>
             </div>
@@ -74,15 +78,52 @@
 </template>
 
 <script lang="ts" setup>
-import {ref,onMounted} from 'vue'
+import {ref,onMounted,reactive} from 'vue'
+import { uporder,getorder } from '@/request/request.ts'
+import { ElMessage } from 'element-plus'
 let tradeData = ref([{}])
-
+let dialogFormVisible = ref(false)
 //tradeData数据
 import tradeTable from '@/data/tradeTable';
-
+function openDialog(){
+    dialogFormVisible.value = true
+}
 //生命周期
+const sizeForm = reactive({
+    price:"",
+    type:"",
+    status:"",
+    content:""
+
+})
+function getData(){
+    getorder()
+}
+async function upload(){
+    console.log(sizeForm)
+    let formData = new FormData()
+    formData.append('username',localStorage.getItem('userID'))
+    formData.append('price',sizeForm.price)
+    formData.append('type',sizeForm.type)
+    formData.append('status',sizeForm.status)
+    formData.append('content',sizeForm.content)
+    const result = await uporder(formData)
+    if (result == 1){
+        ElMessage({
+        message: '发布成功',
+        type: 'success',
+    })
+    }else{
+        ElMessage({
+        message: '发布失败',
+        type: 'error',
+    })
+    }
+}
 onMounted(() => {
+    
     tradeData.value = tradeTable.tradeData.value
+    
 })
 </script>
 
