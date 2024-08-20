@@ -89,6 +89,27 @@ export function getorder(data) {
         return 0; // 返回 null，表示发生了错误
     });
 }
+export function getnumber(data) {
+    return axios.post('http://124.220.149.155:9090/getNumbers', data,{
+        headers: {
+            'Authorization': localStorage.getItem('token') // 使用存储的 token
+        }
+    })
+    .then(res => {
+        if (res.status == 200) {
+            console.log('Data retrieved successfully:', res.data);
+            localStorage.setItem('numbers',res.data.data)
+            return 1; // 返回获取的数据
+        } else {
+            console.log('Failed to retrieve data:', res.data.message);
+            return 0; // 返回 null，表示未能成功获取数据
+        }
+    })
+    .catch(error => {
+        console.log('Error during data retrieval:', error);
+        return 0; // 返回 null，表示发生了错误
+    });
+}
 
 export function getalldata(data) {
     return axios.post('http://124.220.149.155:9090/getAllFruitInfo', data,{
