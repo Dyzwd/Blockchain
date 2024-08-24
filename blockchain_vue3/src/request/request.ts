@@ -77,7 +77,7 @@ export function getorder(data) {
     .then(res => {
         if (res.status == 200) {
             console.log('Data retrieved successfully:', res.data);
-            localStorage.setItem('orders',res.data.data)
+            localStorage.setItem('orders',JSON.stringify(res.data.data))
             return 1; // 返回获取的数据
         } else {
             console.log('Failed to retrieve data:', res.data.message);
@@ -98,7 +98,7 @@ export function getnumber(data) {
     .then(res => {
         if (res.status == 200) {
             console.log('Data retrieved successfully:', res.data);
-            localStorage.setItem('numbers',res.data.data)
+            localStorage.setItem('numbers',JSON.stringify(res.data.data))
             return 1; // 返回获取的数据
         } else {
             console.log('Failed to retrieve data:', res.data.message);
