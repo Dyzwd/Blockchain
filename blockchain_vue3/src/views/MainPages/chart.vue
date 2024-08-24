@@ -4,36 +4,36 @@
             <el-col :span="6">
                 <el-card>
                     <div class="card">
-                        <p>近7天朔源人数</p>
+                        <p>交易笔数</p>
                         <hr>
-                        <p>2</p>
+                        <p>{{chart_one}}</p>
                     </div>
                 </el-card>
             </el-col>
             <el-col :span="6">
                 <el-card>
                     <div class="card">
-                        <p>近7天朔源人数</p>
+                        <p>区块数</p>
                         <hr>
-                        <p>2</p>
+                        <p>{{chart_two}}</p>
                     </div>
                 </el-card>
             </el-col>
             <el-col :span="6">
                 <el-card>
                     <div class="card">
-                        <p>近7天朔源人数</p>
+                        <p>网站访问量</p>
                         <hr>
-                        <p>2</p>
+                        <p>{{chart_three}}</p>
                     </div>
                 </el-card>
             </el-col>
             <el-col :span="6">
                 <el-card>
                     <div class="card">
-                        <p>近7天朔源人数</p>
+                        <p>市场订单量</p>
                         <hr>
-                        <p>2</p>
+                        <p>{{chart_four}}</p>
                     </div>
                 </el-card>
             </el-col>
@@ -57,10 +57,26 @@
 import * as echarts from 'echarts';
 import { reactive, ref, onMounted } from 'vue'
 import { getnumber } from '@/request/request.ts'
+let chartData = ref([{}])
 let lineChart = ref()
 let pieChart = ref()
+let chart_one = ref()
+let chart_two = ref()
+let chart_three = ref()
+let chart_four = ref()
+let line_one = []
 onMounted(() => {
     getnumber()
+    let leng = JSON.parse(localStorage.getItem('numbers')).length
+    
+    chartData.value = JSON.parse(localStorage.getItem('numbers'))[leng - 1] 
+    chart_one.value = JSON.parse(chartData.value.one)[0]
+    chart_two.value = JSON.parse(chartData.value.one)[1]
+    chart_three.value = JSON.parse(chartData.value.one)[2]
+    chart_four.value = JSON.parse(chartData.value.one)[3]
+    line_one = JSON.parse(chartData.value.two)
+    console.log(line_one)
+    console.log(chart_one)
     let myLineChart = echarts.init(lineChart.value)
     let lineOption = {
         title: {
@@ -96,31 +112,31 @@ onMounted(() => {
                 name: '上城区',
                 type: 'line',
                 stack: 'Total',
-                data: [120, 132, 101, 134, 90, 230, 210]
+                data: line_one[0]
             },
             {
                 name: '西湖区',
                 type: 'line',
                 stack: 'Total',
-                data: [220, 182, 191, 234, 290, 330, 310]
+                data: line_one[1]
             },
             {
                 name: '拱墅区',
                 type: 'line',
                 stack: 'Total',
-                data: [150, 232, 201, 154, 190, 330, 410]
+                data: line_one[2]
             },
             {
                 name: '临平区',
                 type: 'line',
                 stack: 'Total',
-                data: [320, 332, 301, 334, 390, 330, 320]
+                data: line_one[3]
             },
             {
                 name: '滨江区',
                 type: 'line',
                 stack: 'Total',
-                data: [820, 932, 901, 934, 1290, 1330, 1320]
+                data: line_one[4]
             }
         ]
     };
@@ -156,11 +172,21 @@ onMounted(() => {
                     show: false
                 },
                 data: [
-                    { value: 1048, name: '上城区' },
-                    { value: 735, name: '西湖区' },
-                    { value: 580, name: '临平区' },
-                    { value: 484, name: '拱墅区' },
-                    { value: 300, name: '滨江区' }
+                    { value: line_one[0].reduce(function(accumulator, currentValue) {
+  return accumulator + currentValue;
+}, 0), name: '上城区' },
+                    { value: line_one[1].reduce(function(accumulator, currentValue) {
+  return accumulator + currentValue;
+}, 0), name: '西湖区' },
+                    { value: line_one[2].reduce(function(accumulator, currentValue) {
+  return accumulator + currentValue;
+}, 0), name: '临平区' },
+                    { value: line_one[3].reduce(function(accumulator, currentValue) {
+  return accumulator + currentValue;
+}, 0), name: '拱墅区' },
+                    { value: line_one[4].reduce(function(accumulator, currentValue) {
+  return accumulator + currentValue;
+}, 0), name: '滨江区' }
                 ]
             }
         ]
