@@ -40,7 +40,7 @@
                         <el-button type="success" size="small" plain @click="handleEdit(scope.row)">
                             详细信息
                         </el-button>
-                        <el-button type="default" size="small" plain @click="handleDel(scope.row)">删除</el-button>
+                        <!--el-button type="default" size="small" plain @click="handleDel(scope.row)">删除</el-button-->
                     </template>
                 </el-table-column>
             </el-table>
@@ -53,13 +53,27 @@
     <!-- dialog1 -->
     <el-dialog v-model="dialogFormVisible" title="编辑" width="500" center>
         <el-form :model="form">
-            <el-form-item  >{{datalabel}}</el-form-item>
+            <el-form-item  label="工厂信息"></el-form-item>
+            <el-form-item  >产品名称：{{datalabel.factory_input.fac_productName}}&nbsp&nbsp&nbsp&nbsp生产批次：{{datalabel.factory_input.fac_productionbatch}}&nbsp&nbsp&nbsp&nbsp生产时间：{{datalabel.factory_input.fac_productionTime}}&nbsp&nbsp&nbsp&nbsp工厂名称：{{datalabel.factory_input.fac_factoryName}}&nbsp&nbsp&nbsp&nbsp联系电话：{{datalabel.factory_input.fac_contactNumber}}</el-form-item>
+            <el-form-item label="司机信息"></el-form-item>
+        <el-form-item>司机姓名：{{datalabel.driver_input.dr_name}}&nbsp&nbsp&nbsp&nbsp司机年龄：{{datalabel.driver_input.dr_age}}&nbsp&nbsp&nbsp&nbsp司机电话：{{datalabel.driver_input.dr_phone}}&nbsp&nbsp&nbsp&nbsp
+  车辆车牌号：{{datalabel.driver_input.dr_carNumber}}&nbsp&nbsp&nbsp&nbsp
+  运输方式：{{datalabel.driver_input.dr_transport}}&nbsp&nbsp&nbsp&nbsp</el-form-item>
+<el-form-item label="商品信息"></el-form-item>
+<el-form-item>
+  上架时间：{{datalabel.shop_input.sh_storeTime}}&nbsp&nbsp&nbsp&nbsp
+  销售时间：{{datalabel.shop_input.sh_sellTime}}&nbsp&nbsp&nbsp&nbsp
+  商店名称：{{datalabel.shop_input.sh_shopName}}&nbsp&nbsp&nbsp&nbsp
+  商店地址：{{datalabel.shop_input.sh_shopAddress}}&nbsp&nbsp&nbsp&nbsp
+  联系电话：{{datalabel.shop_input.sh_shopPhone}}&nbsp&nbsp&nbsp&nbsp
+  
+</el-form-item>
         </el-form>
         <template #footer>
             <div class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取消</el-button>
                 <el-button type="primary" @click="onSubmit">
-                    应用
+                    区块链浏览器
                 </el-button>
             </div>
         </template>
@@ -68,7 +82,7 @@
 
 <script setup lang="ts">
 //附件区（一般不改）
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch,reactive,nextTick } from 'vue'
 import { ArrowDown } from '@element-plus/icons-vue'
 import {
     Edit,
@@ -96,7 +110,7 @@ const radio = ref('true')
 //工作区
 const dialogFormVisible = ref(false)
 let index = ref(0)
-let datalabel = ""
+let datalabel = ref([])
 const form = ref({
     id: "",
     crop: "",
@@ -105,7 +119,7 @@ const form = ref({
     weight: "",
     isTrade: null,
 })
-let cropData = ref([{}])
+let cropData = reactive([{}])
 //menuChange函数
 import useRoute from '@/hooks/useRoute'
 const { menuChange } = useRoute()
@@ -123,7 +137,7 @@ const handleDel = ({ id }: any) => {
 //编辑数据-打开
 const handleEdit = (res) => {
     console.log(res)
-    datalabel = JSON.stringify(res)
+    datalabel.value = res
     dialogFormVisible.value = true
     //dialogFormVisible.value = true
 
@@ -139,14 +153,18 @@ const onSubmit = () => {
 //搜索
 let input = ref("")
 const onSearch = () => {
-    cropData.value = listTable.cropData.value.filter(item => item.crop.match(input.value))
-   
-}
-watch(input, (news) => {
-    if (news === "") {
-        cropData.value = listTable.cropData.value
-    }
-})
+    const searchValue = input.value;
+    const updatedData = cropData.filter(item => {
+        return item.traceability_code === searchValue;
+    });
+    cropData = updatedData;
+    nextTick(() => {
+        // 这里可以放置需要在DOM更新后执行的代码
+        console.log('表格应该已经更新了');
+    });
+    input.value = ""
+};
+
 
 //分页
 let total = ref(2)
