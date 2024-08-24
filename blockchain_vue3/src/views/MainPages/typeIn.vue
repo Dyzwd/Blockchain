@@ -160,12 +160,16 @@ async function add() {
     if (farmer() == true)
     {
         formData.append('traceability_code',sizeForm.trace)
+        
+    }
+    else{
+      sizeForm.last = sizeForm.id
     }
     formData.append('arg1',sizeForm.crop)
     formData.append('arg2',sizeForm.source)
     formData.append('arg3',sizeForm.time)
     formData.append('arg4',sizeForm.weight)
-    formData.append('arg5',sizeForm.id)
+    formData.append('arg5',sizeForm.last)
     console.log(sizeForm.crop)
     const result = await uplink(formData)
     if (result == 1){
